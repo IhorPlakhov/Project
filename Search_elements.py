@@ -5,19 +5,19 @@ from random import sample
 class Search(abs):
 
     def __init__(self):
-        self._permutations_counter = 0
+        self._comparison_counter = 0
     
     @property
-    def permutations_counter(self):
-        return self._permutations_counter
+    def comparison_counter(self):
+        return self._comparison_counter
     
-    @permutations_counter.setter
-    def permutations_counter(self, value):
-        self._permutations_counter = value
+    @comparison_counter.setter
+    def comparison_counter(self, value):
+        self._comparison_counter = value
 
     @abstractmethod
-    def Searching_element(self, array):
-        self.permutations_counter=0
+    def Searching_element(self, array, ind_list):
+        pass
 
 class Sequential_Search(Search):
     
@@ -38,36 +38,37 @@ class Hash_Function_Search(Search):
 class Sort_Controller():
 
     def __init__(self):
-        self.__target_element = None
-        self.__array = None
+        self._history_list = []
+        self._target_element = None
+        self._array = None
 
     @property
     def target_element(self):
-        return self.__target_element
-    
-    @target_element.setter
-    def permutations_counter(self, value):
-        self.__target_element = value
+        return self._target_element
+
+    @property
+    def history_list(self):
+        return self._history_list
     
     @property
     def array(self):
-        return self.__array
-    
-    @array.setter
-    def permutations_counter(self, value):
-        self.__array = value
+        return self._array
+
+    _variants = {
+        "s" : Sequential_Search,
+        "f" : Fibonacci_Search,
+        "i" : Interpolation_Search,
+        "h" : Hash_Function_Search
+    }
 
     def Filling_array_random_elements(self, size):
-        self.array('i',[0]*size)
-        array = sample(range(0,size+1),size)
+        self._array= array('i',[0]*size)
+        self._array = sample(range(0,size+1),size)
 
     def Choosing_kind_sort(self, variant):
-        sort = None
-        variants = {
-            "s" : sort = Sequential_Search();
-            "f" : sort = Fibonacci_Search();
-            "i" : sort = Interpolation_Search();
-            "h" : sort = Hash_Function_Search()
-        }
+        new_sort = self._variants[variant]
+        new_sort.Searching_element(self.target_element,self.history_list)
+
+        
 
         
