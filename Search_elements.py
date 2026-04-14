@@ -16,24 +16,93 @@ class Search(ABC):
         self._comparison_counter = value
 
     @abstractmethod
-    def Searching_element(self, array, ind_list):
+    def Searching_element(self, array, ind_list, element):
         pass
 
 class Sequential_Search(Search):
-    
-    pass
 
+    def Searching_element(self, arr, ind_list, element):
+        self.comparison_counter = 0
+        for i in range(0,len(arr)):
+            self.comparison_counter+=1
+            ind_list.append(i)
+            if i == element:
+                return True
+            
+        return False
+                
 class Fibonacci_Search(Search):
-    
-    pass
+
+    def Searching_element(self, arr, ind_list, element):
+        self.comparison_counter = 0
+        arr = sorted(arr)
+        arr_size = len(arr)
+        fib_num_2 = 0
+        fib_num_1 = 1
+        fib_num = 1
+
+        while fib_num < arr_size:
+            fib_num_2 = fib_num_1
+            fib_num_1 = fib_num
+            fib_num = fib_num_2 + fib_num_1
+        
+        offset = -1
+
+        while fib_num > 1:
+            i = offset + fib_num_2 if offset + fib_num_2 < arr_size-1 else arr_size-1
+            ind_list.append(i)
+            self.comparison_counter+=1
+            if arr[i] < element:
+                fib_num = fib_num_1
+                fib_num_1 = fib_num_2
+                fib_num_2 = fib_num - fib_num_1
+                offset = i
+            elif arr[i] > element:
+                fib_num = fib_num_2
+                fib_num_1 = fib_num_1 - fib_num_2
+                fib_num_2 = fib_num - fib_num_1
+            else:
+                return True
+            
+            self.comparison_counter += 1
+            if fib_num_1 and arr[offset + 1] == element:
+                ind_list.append(offset + 1)
+                return True
+        
+        return False
 
 class Interpolation_Search(Search):
     
-    pass
+    def Searching_element(self, arr, ind_list, element):
+        self.comparison_counter = 0
+        arr = sorted(arr)
+        low = 0
+        high = len(arr)-1
+
+        while low <= high and element >= arr[low] and element <= arr[high]:
+            if arr[low] == arr[high]:
+                ind_list.append(low)
+                self.comparison_counter+=1
+                if arr[low] == element:
+                    return True
+                return False
+            
+            pos = low + ((element-arr[low])*(high-low)//(arr[high]- arr[low]))
+            ind_list.append(pos)
+            self.comparison_counter+=1
+            if arr[pos] == element:
+                return True
+            elif arr[pos] < element:
+                low = pos + 1
+            else:
+                high = pos - 1
+
+        return False
 
 class Hash_Function_Search(Search):
     
-    pass
+    def Searching_element(self, arr, ind_list, element):
+        pass
 
 class Sort_Controller():
 
@@ -67,8 +136,5 @@ class Sort_Controller():
 
     def Choosing_kind_sort(self, variant):
         new_sort = self._variants[variant]
-        new_sort.Searching_element(self.target_element,self.history_list)
-
-        
-
+        new_sort.Searching_element(self.array, self.history_list, self.target_element)
         
