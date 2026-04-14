@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from array import array
 from random import sample
 
-class Search(abs):
+class Search(ABC):
 
     def __init__(self):
         self._comparison_counter = 0
