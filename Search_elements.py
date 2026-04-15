@@ -16,7 +16,7 @@ class Search(ABC):
         self._comparison_counter = value
 
     @abstractmethod
-    def Searching_element(self, array, ind_list, element):
+    def Searching_element(self, arr, ind_list, element):
         pass
 
 class Sequential_Search(Search):
@@ -35,7 +35,7 @@ class Fibonacci_Search(Search):
 
     def Searching_element(self, arr, ind_list, element):
         self.comparison_counter = 0
-        arr = sorted(arr)
+        arr = array('i',sorted(arr))
         arr_size = len(arr)
         fib_num_2 = 0
         fib_num_1 = 1
@@ -108,12 +108,14 @@ class Sort_Controller():
 
     def __init__(self):
         self._history_list = []
-        self._target_element = None
         self._array = None
 
-    @property
-    def target_element(self):
-        return self._target_element
+        self._variants = {
+        "1" : Sequential_Search(),
+        "2" : Fibonacci_Search(),
+        "3" : Interpolation_Search(),
+        "4" : Hash_Function_Search()
+    }
 
     @property
     def history_list(self):
@@ -123,18 +125,19 @@ class Sort_Controller():
     def array(self):
         return self._array
 
-    _variants = {
-        "s" : Sequential_Search,
-        "f" : Fibonacci_Search,
-        "i" : Interpolation_Search,
-        "h" : Hash_Function_Search
-    }
-
     def Filling_array_random_elements(self, size):
-        self._array= array('i',[0]*size)
-        self._array = sample(range(0,size+1),size)
-
-    def Choosing_kind_sort(self, variant):
+        if size>= 100 and size <= 1000:
+            self._array= array('i', sample(range(0,size),size))
+        else:
+            raise ArraySizeError(size)
+    
+    def Searching(self, variant, target_element):
+        self._history_list.clear()
         new_sort = self._variants[variant]
-        new_sort.Searching_element(self.array, self.history_list, self.target_element)
+        return new_sort.Searching_element(self.array, self.history_list, target_element)
         
+class ArraySizeError(Exception):
+    
+    def __init__(self, size):
+
+        super().__init__(f"Error: Size of your array: {size}, but must be in range (100, 1000)")

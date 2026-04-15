@@ -6,16 +6,20 @@ class File():
         if(len(name)<= 255):
             for i in symbols:
                 if i in name:
-                    raise ForbiddenSymbol(i)
+                    raise ForbiddenSymbol(name, i)
             name+=".txt"
             return name
         else:
             print("Your file name cannot be more than 255 symbols")
             return False
         
-    def WriteFile(self,name):
+    def WriteFile(self,name, arr, element):
         with open(name,'w') as f:
-            pass
+            print(arr[i],file=f,end=" ")
+            for i in range (1,len(arr),50):
+                for i in range (1,50):
+                    print(arr[i],file=f,end=" ")
+                    print(" ")
 
 
     
