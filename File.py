@@ -5,20 +5,22 @@ class File():
         symbols = "\\/|><\"?*"
         if(len(name)<= 255):
             for i in symbols:
-                if i in self.name:
-                    print("Your file name cannot have symbols(\ | / > < ? \" *) ")
-                    return False
+                if i in name:
+                    raise ForbiddenSymbol(i)
             name+=".txt"
             return name
         else:
             print("Your file name cannot be more than 255 symbols")
             return False
+        
+    def WriteFile(self,name):
+        with open(name,'w') as f:
+            pass
+
+
     
 class ForbiddenSymbol(Exception):
-
-    def __init__(self, msg, ch):
-        self.massage = msg
-        self.char = ch
     
-    def TextMassage(self):
-        return f"Error: {self.massage} {self.char}"
+    def __init__(self, symbol, name):
+
+        super().__init__(f"Error: Your file name: '{name}' has forbidden symbol {symbol}")
