@@ -2,7 +2,7 @@ from Search_elements import *
 from File import *
 
 
-S = Sequential_Controller()
+S = Search_Controller()
 
 print("Enter 1 to Sequential_Search\nEnter 2 to Fibonacci_Search\nEnter 3 Interpolation_Search")
 variant = input("Your choose: ")

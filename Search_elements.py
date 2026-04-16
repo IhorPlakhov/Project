@@ -104,7 +104,7 @@ class Hash_Function_Search(Search):
     def Searching_element(self, arr, ind_list, element):
         pass
 
-class Sort_Controller():
+class Search_Controller():
 
     def __init__(self):
         self._history_list = []
