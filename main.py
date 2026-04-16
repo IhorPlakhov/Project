@@ -10,9 +10,15 @@ variant = input("Your choose: ")
 s = int(input("Enter the array size(100,1000): "))
 var = int(input("Enter the element which we search: "))
 S.Filling_array_random_elements(s)
+print(f"Array: {S.array}\n\n")
 if S.Searching(variant, var):
     print("Element is exist")
+    print(f"Array: {S.history_list}")
+    name = input("Enter the file name: ")
+    My_file = File(name)
+    if My_file.Check_File_Name():
+        My_file.Write_File(10, S.array, var)
 else:
     print("Element is not exist")
-print(f"Array: {S.array}")
-print(f"Array: {S.history_list}")
+
+
