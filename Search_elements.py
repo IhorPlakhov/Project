@@ -16,26 +16,23 @@ class Search(ABC):
         self._comparison_counter = value
 
     @abstractmethod
-    def Searching_element(self, arr, ind_list, element):
+    def searching_element(self, arr, ind_list, element):
         pass
 
-class Sequential_Search(Search):
+class SequentialSearch(Search):
 
-    def Searching_element(self, arr, ind_list, element):
-        self.comparison_counter = 0
+    def searching_element(self, arr, ind_list, element):
         for i in range(0,len(arr)):
             self.comparison_counter+=1
             ind_list.append(i)
-            if i == element:
+            if arr[i] == element:
                 return True
             
         return False
                 
-class Fibonacci_Search(Search):
+class FibonacciSearch(Search):
 
-    def Searching_element(self, arr, ind_list, element):
-        self.comparison_counter = 0
-        arr = array('i',sorted(arr))
+    def searching_element(self, arr, ind_list, element):
         arr_size = len(arr)
         fib_num_2 = 0
         fib_num_1 = 1
@@ -71,11 +68,9 @@ class Fibonacci_Search(Search):
         
         return False
 
-class Interpolation_Search(Search):
+class InterpolationSearch(Search):
     
-    def Searching_element(self, arr, ind_list, element):
-        self.comparison_counter = 0
-        arr = sorted(arr)
+    def searching_element(self, arr, ind_list, element):
         low = 0
         high = len(arr)-1
 
@@ -99,22 +94,64 @@ class Interpolation_Search(Search):
 
         return False
 
-class Hash_Function_Search(Search):
-    
-    def Searching_element(self, arr, ind_list, element):
-        pass
+class HashFunctionSearch(Search):
 
-class Search_Controller():
+    def __init__ (self):
+        super().__init__()
+        self.hash_table = None
+        self.last_arr = None
+
+    def searching_element(self, arr, ind_list, element):
+        self.table_check(arr)
+        size = len(self.hash_table)
+
+        ind = element % size
+        
+        for i in range(size):
+            ind = (ind + i) % size
+
+            ind_list.append(ind)
+            
+            self.comparison_counter += 1
+            if self.hash_table[ind] == element:
+                return True
+            
+            self.comparison_counter += 1
+            if self.hash_table[ind] == -1:
+                break
+            
+        return False
+
+    def create_hash_table(self):
+        size = len(self.last_arr)
+        self.hash_table = array("i", [-1] * size) # It is necessary to specify the size of the hash table
+    
+        for key in self.last_arr:
+            index = key % size
+            
+            for i in range(size):
+                index = (index + i) % size
+                
+                if self.hash_table[index] == -1:
+                    self.hash_table[index] = key
+                    break
+    
+    def table_check(self, array):
+        if(self.hash_table != None or self.last_arr != array):
+            self.last_arr = array
+            self.create_hash_table()
+
+class SearchController():
 
     def __init__(self):
         self._history_list = []
         self._array = None
 
         self._variants = {
-        "1" : Sequential_Search(),
-        "2" : Fibonacci_Search(),
-        "3" : Interpolation_Search(),
-        "4" : Hash_Function_Search()
+        "1" : SequentialSearch(),
+        "2" : FibonacciSearch(),
+        "3" : InterpolationSearch(),
+        "4" : HashFunctionSearch()
     }
 
     @property
@@ -125,16 +162,19 @@ class Search_Controller():
     def array(self):
         return self._array
 
-    def Filling_array_random_elements(self, size):
-        if size>= 100 and size <= 1000:
-            self._array= array('i', sample(range(0,size*10),size))
+    def filling_array_random_elements(self, size):
+        if size >= 100 and size <= 1000:
+            self._array= array('i', sample(range(0,size * 10),size))
         else:
             raise ArraySizeError(size)
     
-    def Searching(self, variant, target_element):
+    def searching(self, variant, target_element):
         self._history_list.clear()
         new_sort = self._variants[variant]
-        return new_sort.Searching_element(self.array, self.history_list, target_element)
+        if variant == "2" or variant == "3":
+            self._array = array('i',sorted(self._array))
+        new_sort.comparison_counter = 0
+        return new_sort.searching_element(self.array, self.history_list, target_element)
         
 class ArraySizeError(Exception):
     

@@ -1,22 +1,19 @@
 from Search_elements import *
 from File import *
 
+S = SearchController()
 
-S = Search_Controller()
-
-print("Enter 1 to Sequential_Search\nEnter 2 to Fibonacci_Search\nEnter 3 Interpolation_Search")
+print("Enter 1 to SequentialSearch\nEnter 2 to FibonacciSearch\nEnter 3 InterpolationSearch\nEnter 4 HashFunctionSearch")
 variant = input("Your choose: ")
 
 s = int(input("Enter the array size(100,1000): "))
+S.filling_array_random_elements(s)
+print(f"Array: {S.array}\n")
 var = int(input("Enter the element which we search: "))
-S.Filling_array_random_elements(s)
-print(f"Array: {S.array}\n\n")
-if S.Searching(variant, var):
+if S.searching(variant, var):
     print("Element is exist")
     print(f"Array: {S.history_list}")
     My_file = File()
-    My_file.Write_File(10, S.array, var)
+    My_file.write_file(10, S.array, var)
 else:
     print("Element is not exist")
-
-
