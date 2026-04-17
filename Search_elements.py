@@ -127,7 +127,7 @@ class Search_Controller():
 
     def Filling_array_random_elements(self, size):
         if size>= 100 and size <= 1000:
-            self._array= array('i', sample(range(0,size),size))
+            self._array= array('i', sample(range(0,size*10),size))
         else:
             raise ArraySizeError(size)
     
