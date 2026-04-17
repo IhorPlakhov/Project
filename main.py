@@ -14,10 +14,8 @@ print(f"Array: {S.array}\n\n")
 if S.Searching(variant, var):
     print("Element is exist")
     print(f"Array: {S.history_list}")
-    name = input("Enter the file name: ")
-    My_file = File(name)
-    if My_file.Check_File_Name():
-        My_file.Write_File(10, S.array, var)
+    My_file = File()
+    My_file.Write_File(10, S.array, var)
 else:
     print("Element is not exist")
 
