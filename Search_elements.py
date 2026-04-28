@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from array import array
 from random import sample
+from math import sqrt
 
 class Search(ABC):
 
@@ -108,10 +109,10 @@ class HashFunctionSearch(Search):
         self.table_check(arr)
         size = len(self.hash_table)
 
-        ind = element % size
-        
+        hash1 = self.first_hashing(element, size)
+        hash2 = self.second_hashing(element, size)
         for i in range(size):
-            ind = (ind + i) % size
+            ind = (hash1 + i*hash2) % size
             
             self.comparison_counter += 1
             if self.hash_table[ind] == element:
@@ -122,24 +123,44 @@ class HashFunctionSearch(Search):
                 break
             
         return False, []
+    
+    def first_hashing(self, key, size):
+        return key % size
+    
+    def second_hashing(self, key, size):
+        return 1 + (key % (size-1))
+
+    def first_prime_number(self, size):
+        prime_number = size
+        is_found = False
+        while not is_found:
+            for i in range(2,int(sqrt(prime_number))+1):
+                if (prime_number % i == 0):
+                    prime_number+=1
+                    break
+            else:
+                is_found = True
+    
+        return prime_number
 
     def create_hash_table(self):
-        size = len(self.last_arr) * 2 
-        self.hash_table = array("i", [-1] * size) # It is necessary to specify the size of the hash table
-    
+        size = self.first_prime_number(len(self.last_arr) * 2)
+        self.hash_table = array("i", [-1] * size)
+
         for key in self.last_arr:
-            index = key % size
             
+            hash1 = self.first_hashing(key, size)
+            hash2 = self.second_hashing(key, size)
             for i in range(size):
-                index = (index + i) % size
-                
-                if self.hash_table[index] == -1:
-                    self.hash_table[index] = key
+                ind = (hash1+ i*hash2) % size
+
+                if self.hash_table[ind] == -1:
+                    self.hash_table[ind] = key
                     break
     
-    def table_check(self, array):
-        if(self.hash_table is None or self.last_arr is not array):
-            self.last_arr = array
+    def table_check(self, new_array):
+        if(self.hash_table is None or self.last_arr is not new_array):
+            self.last_arr = new_array
             self.create_hash_table()
 
 class SearchController():
@@ -169,7 +190,7 @@ class SearchController():
         if variant == "2" or variant == "3":
             self._array = array('i',sorted(self._array))
         new_sort.comparison_counter = 0
-        return new_sort.searching_element(self.array, target_element)
+        return *(new_sort.searching_element(self.array, target_element)), new_sort.comparison_counter
         
 class ArraySizeError(Exception):
     

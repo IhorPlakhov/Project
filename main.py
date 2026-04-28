@@ -11,10 +11,11 @@ s = int(input("Enter the array size(100,1000): "))
 S.filling_array_random_elements(s)
 print(f"Array: {S.array}\n")
 var = int(input("Enter the element which we search: "))
-is_found, history_list =  S.searching(variant, var)
+is_found, history_list, counter =  S.searching(variant, var)
 if is_found:
     print("Element is exist")
     print(f"History list: {history_list}")
+    print(f"Quantity of comparison: {counter}")
     My_file = File()
     My_file.write_file(10, S.array, var)
 else:
