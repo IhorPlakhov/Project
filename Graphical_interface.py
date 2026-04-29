@@ -9,6 +9,7 @@ class Window(Tk):
         self.controler = controler
         self.title("Search comparison")
         self.geometry("450x650")
+        self.type_of_search = ["SequentialSearch","FibonacciSearch","InterpolationSearch","HashFunctionSearch"]
 
         self.btn = Button(
             self, 
@@ -39,7 +40,7 @@ class Window(Tk):
 
         self.lable_1.place(
             relx=0.15, 
-            rely=0.65, 
+            rely=0.55, 
             anchor="w",
             relwidth=0.4, 
             relheight=0.07
@@ -54,7 +55,7 @@ class Window(Tk):
 
         self.lable_2.place(
             relx=0.12, 
-            rely=0.75, 
+            rely=0.65, 
             anchor="w",
             relwidth=0.4, 
             relheight=0.07
@@ -67,7 +68,7 @@ class Window(Tk):
 
         self.entry_size.place(
             relx=0.8, 
-            rely=0.75, 
+            rely=0.65, 
             anchor="e",
             relwidth=0.25, 
             relheight=0.07
@@ -80,19 +81,25 @@ class Window(Tk):
 
         self.entry_element.place(
             relx=0.8, 
-            rely=0.65, 
+            rely=0.55, 
             anchor="e",
             relwidth=0.25, 
-            relheight=0.07
+            relheight=0.08
             )
-
-    def get_size(self):
-        return self.entry_size.get()
-    
-    def get_element(self):
-        return self.entry_element.get()
         
+        self.cd = Combobox(self,state="readonly")
+        self.cd.configure(
+            font =("Comfortaa", 20),
+            values=self.type_of_search,
+        
+
+            )
+        self.cd.set("Choose an algorithm")
+        selected_algorithm = self.cd.get()
+        self.cd.bind("<<ComboboxSelected>>", self.on_algorithm_select)
+        self.current_choice = None
+
     def clicked_on_search(self):
         pass
-        #self.controler.filling_array_random_elements(self.get_size)
-        #self.controler.search(var, self.)
+        #self.controler.filling_array_random_elements(self.entry_size.get())
+        #self.controler.search(self.cd.get(), self.entry_element.get())
