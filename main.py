@@ -1,8 +1,12 @@
 from Search_elements import *
 from File import *
+from Graphical_interface import Window
 
-S = SearchController()
+if __name__ == "__main__":
+    win = Window(SearchController())
+    win.mainloop()
 
+""" 
 print("Enter 1 to SequentialSearch\nEnter 2 to FibonacciSearch\nEnter 3 InterpolationSearch\nEnter 4 HashFunctionSearch")
 variant = input("Your choose: ")
 
@@ -20,3 +24,5 @@ if is_found:
     My_file.write_file(10, S.array, var)
 else:
     print("Element is not exist")
+
+"""
