@@ -114,13 +114,15 @@ class HashFunctionSearch(Search):
         for i in range(size):
             ind = (hash1 + i*hash2) % size
             
+            index = self.hash_table[ind]
+
             self.comparison_counter += 1
-            if self.hash_table[ind] == element:
-                return True, []
-            
-            self.comparison_counter += 1
-            if self.hash_table[ind] == -1:
+            if index == -1:
                 break
+
+            self.comparison_counter += 1
+            if arr[index] == element:
+                return True, []
             
         return False, []
     
@@ -147,15 +149,16 @@ class HashFunctionSearch(Search):
         size = self.first_prime_number(len(self.last_arr) * 2)
         self.hash_table = array("i", [-1] * size)
 
-        for key in self.last_arr:
+        for index in range(len(self.last_arr)):
+            element = self.last_arr[index]
             
-            hash1 = self.first_hashing(key, size)
-            hash2 = self.second_hashing(key, size)
+            hash1 = self.first_hashing(element, size)
+            hash2 = self.second_hashing(element, size)
             for i in range(size):
                 ind = (hash1+ i*hash2) % size
 
                 if self.hash_table[ind] == -1:
-                    self.hash_table[ind] = key
+                    self.hash_table[ind] = index
                     break
     
     def table_check(self, new_array):
