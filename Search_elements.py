@@ -172,10 +172,10 @@ class SearchController():
         self._array = None
 
         self._variants = {
-        "1" : SequentialSearch(),
-        "2" : FibonacciSearch(),
-        "3" : InterpolationSearch(),
-        "4" : HashFunctionSearch()
+        "Sequential Search" : SequentialSearch(),
+        "Fibonacci Search" : FibonacciSearch(),
+        "Interpolation Search" : InterpolationSearch(),
+        "HashFunction Search" : HashFunctionSearch()
     }
     
     @property
@@ -183,20 +183,12 @@ class SearchController():
         return self._array
 
     def filling_array_random_elements(self, size):
-        if size >= 100 and size <= 1000:
-            self._array= array('i', sample(range(0,size * 10),size))
-        else:
-            raise ArraySizeError(size)
+        self._array= array('i', sample(range(0,size * 10),size))
+
     
     def searching(self, variant, target_element):
         new_sort = self._variants[variant]
-        if variant == "2" or variant == "3":
+        if variant == "Fibonacci Search" or variant == "Interpolation Search":
             self._array = array('i',sorted(self._array))
         new_sort.comparison_counter = 0
         return *(new_sort.searching_element(self.array, target_element)), new_sort.comparison_counter
-        
-class ArraySizeError(Exception):
-    
-    def __init__(self, size):
-
-        super().__init__(f"Error: Size of your array: {size}, but must be in range (100, 1000)")
