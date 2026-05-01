@@ -1,5 +1,6 @@
-from tkinter import Tk, Button, Entry, Label
+from tkinter import Tk, Button, Entry, Label, messagebox, StringVar, Toplevel
 from tkinter.ttk import Combobox
+from Table import Table
 
 class Window(Tk):
 
@@ -11,17 +12,28 @@ class Window(Tk):
         self.geometry("450x300")
         self.type_of_search = ["Sequential Search","Fibonacci Search","Interpolation Search","Hash Function Search"]
         self.enter_lenght = 5
+        self.size_var = StringVar()
+        self.element_var = StringVar()
+        self.algorithm_var = StringVar()
+        self.history_list = []
+
+        self.size_var.trace_add("write", self.check_fields)
+        self.element_var.trace_add("write", self.check_fields)
+        self.algorithm_var.trace_add("write", self.check_fields)
+
+        self.table_window = None
 
         self.btn_1 = Button(
             self, 
             text="START", 
             font =("Comfortaa", 20), 
-            fg="#edc68d", 
+            fg="#edc68d",
             bg="#303938",
             activebackground="#edc68d",
             activeforeground="#303938",
             relief="flat",
-            command=self.clicked_on_search
+            command=self.clicked_on_search,
+            state="disabled"
             )
         
         self.btn_1.place(
@@ -41,7 +53,8 @@ class Window(Tk):
             activebackground="#edc68d",
             activeforeground="#303938",
             relief="flat",
-            command=self.clicked_on_search
+            command=self.clicked_on_search,
+            state="disabled"
             )
         
         self.btn_2.place(
@@ -61,7 +74,8 @@ class Window(Tk):
             activebackground="#edc68d",
             activeforeground="#303938",
             relief="flat",
-            command=self.clicked_on_search
+            command=self.creation_table,
+            state="disabled"
             )
         
         self.btn_3.place(
@@ -106,7 +120,8 @@ class Window(Tk):
             self,
             font =("Comfortaa", 20),
             validate = "key",
-            validatecommand = (self.register(self.validate_char), '%P')
+            validatecommand = (self.register(self.validate_char), '%P'),
+            textvariable=self.size_var
         )
 
         self.entry_size.place(
@@ -121,7 +136,8 @@ class Window(Tk):
                 self,
                 font = ("Comfortaa", 20),
                 validate = "key",
-                validatecommand = (self.register(self.validate_char), '%P')
+                validatecommand = (self.register(self.validate_char), '%P'),
+                textvariable=self.element_var
             )
 
         self.entry_element.place(
@@ -136,11 +152,11 @@ class Window(Tk):
         self.cd.configure(
             font =("Comfortaa", 20),
             values=self.type_of_search,
-        
+            textvariable=self.algorithm_var
 
             )
         self.cd.set("Choose algorithm")
-        self.cd.bind("<<ComboboxSelected>>")
+        self.cd.bind("<<ComboboxSelected>>", self.check_fields)
 
         self.cd.place(
             relx=0.5, 
@@ -190,44 +206,62 @@ class Window(Tk):
         self.lable_5.place(
             relx=0.5, 
             rely=0.625,
-            anchor="c",
+            anchor="center",
             relwidth=0.5, 
             relheight=0.1
             )
 
     def clicked_on_search(self):
-        array_size = int(self.entry_size.get())
-        if array_size == "":
-            raise ValueError("You don't entered array size!")
-        
-        if array_size > 1000 or array_size <100:
-            raise ArraySizeError(array_size)
-        element = self.entry_element.get()
-        if element == "":
-            raise ValueError("You don't entered target element")
-        
-        choice = self.cd.get()
-        if choice == "Choose algorithm":
-            raise ValueError("You don't choosed algorithm!")
-        
-        self.controler.filling_array_random_elements(array_size)
-        is_found, history_list, counter = self.controler.searching(choice, int(element))
-        if is_found:
-            self.lable_5.config(text="Element is found",fg="#51ea3d")
-            self.lable_4.config(text=counter)
+        array_size = self.entry_size.get()
+        array_size = int(array_size)
+        if array_size <= 1000 and array_size >= 100:
+            element = self.entry_element.get()
+            choice = self.cd.get()
+            self.controler.filling_array_random_elements(array_size)
+            is_found, self.history_list, counter = self.controler.searching(choice, element)
+            if is_found:
+                self.lable_5.config(text="Element is found",fg="#51ea3d")
+                self.lable_4.config(text=counter)
+            else:
+                self.lable_5.config(text="Element is not found",fg="#f1392b")
+                self.history_list = []
         else:
-            self.lable_5.config(text="Element is not found",fg="#f1392b")
+            messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range (100, 1000)")
+    
+    def creation_table(self):
+        if (self.controler.array == None):
+            array_size = int(self.entry_size.get())
+            if array_size <= 1000 and array_size >= 100:
+                self.controler.filling_array_random_elements(array_size)
+            else:
+                messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range (100, 1000)")
+                return
+
+        if self.table_window is None or not self.table_window.winfo_exists():
+            self.table_window = Table(self.controler.array)
+        else:
+            self.table_window.table_check(self.controler.array, self.history_list)
 
 
+
+    def check_fields(self, *args):
+        size = self.size_var.get()
+        element = self.element_var.get()
+        choice = self.algorithm_var.get()
+
+        if size != "":
+            self.btn_3.config(state="normal")
+            if element != "" and choice != "Choose algorithm":
+                self.btn_1.config(state="normal")
+                if self.lable_4.cget("text") != "":
+                    self.btn_2.config(state="normal")
+                else:
+                    self.btn_2.config(state="disabled")
+            else:
+                self.btn_1.config(state="disabled")
+        else:
+            self.btn_3.config(state="disabled")
     
 
     def validate_char(self, text):
         return text == "" or text.isdigit() and len(text) <= self.enter_lenght
-
-
-
-class ArraySizeError(Exception):
-    
-    def __init__(self, size):
-
-        super().__init__(f"Error: Size of your array: {size}, but must be in range (100, 1000)")
