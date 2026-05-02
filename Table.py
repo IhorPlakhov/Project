@@ -1,4 +1,4 @@
-from tkinter import Button, Label, Toplevel, Frame, StringVar
+from tkinter import Button, Label, Toplevel, Frame
 
 class Table (Toplevel):
     def __init__(self, arr, algo=""):

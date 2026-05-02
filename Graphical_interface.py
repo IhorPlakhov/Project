@@ -18,10 +18,6 @@ class Window(Tk):
         self.algorithm_var = StringVar()
         self.history_list = []
 
-        self.size_var.trace_add("write", self.check_fields)
-        self.element_var.trace_add("write", self.check_fields)
-        self.algorithm_var.trace_add("write", self.check_fields)
-
         self.table_window = None
 
         self.btn_1 = Button(
@@ -54,7 +50,7 @@ class Window(Tk):
             activebackground="#edc68d",
             activeforeground="#303938",
             relief="flat",
-            command=self.write_result,
+            command=self.save_result,
             state="disabled"
             )
         
@@ -233,6 +229,10 @@ class Window(Tk):
             relheight=0.1
             )
         
+        self.size_var.trace_add("write", self.check_fields)
+        self.element_var.trace_add("write", self.check_fields)
+        self.algorithm_var.trace_add("write", self.check_fields)
+        
     
     def clean_interface(self):
         self.size_var.set("")
@@ -279,9 +279,11 @@ class Window(Tk):
             self.lable_4.config(text=counter)
         else:
             self.lable_5.config(text="Element is not found",fg="#f1392b")
+            self.lable_4.config(text="")
             self.history_list = []
 
         self.btn_2.config(state="normal")
+        self.check_fields()
     
     def creation_table(self):
         array_size = int(self.entry_size.get())
@@ -303,6 +305,7 @@ class Window(Tk):
             self.table_window.table_check(self.controler.array, self.history_list, choice)
         else:
             self.table_window.table_check(self.controler.array, self.history_list, choice)
+        self.check_fields()
 
     def check_fields(self, *args):
         size = self.size_var.get()
@@ -322,18 +325,22 @@ class Window(Tk):
                 self.btn_1.config(state="disabled")
         else:
             self.btn_1.config(state="disabled")
-            self.btn_2.config(state="disabled")
             self.btn_3.config(state="disabled")
-        
-        if self.history_list:
-             self.btn_2.config(state="normal")
+            self.btn_2.config(state="disabled")
+
+        if hasattr(self, 'lable_4'):
+            current_text = self.lable_4.cget("text")
+            if not current_text or current_text == "":
+                 self.btn_2.config(state="disabled")
+            else:
+                 self.btn_2.config(state="normal")
         else:
-             self.btn_2.config(state="disabled")
+            self.btn_2.config(state="disabled")
     
     def validate_char(self, text):
         return text == "" or text.isdigit() and len(text) <= self.enter_lenght
     
-    def write_result(self):
+    def save_result(self):
         user_solution = messagebox.askokcancel(
             "Confirmation",
             "Do you want to save the search results to a file?"
