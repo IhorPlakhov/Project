@@ -1,6 +1,7 @@
-from tkinter import Tk, Button, Entry, Label, messagebox, StringVar, Toplevel
+from tkinter import Tk, Button, Entry, Label, messagebox, StringVar
 from tkinter.ttk import Combobox
 from Table import Table
+from File import *
 
 class Window(Tk):
 
@@ -53,7 +54,7 @@ class Window(Tk):
             activebackground="#edc68d",
             activeforeground="#303938",
             relief="flat",
-            command=self.clicked_on_search,
+            command=self.write_result,
             state="disabled"
             )
         
@@ -84,6 +85,27 @@ class Window(Tk):
             anchor="e",
             relwidth=0.25, 
             relheight=0.12
+            )
+        
+        self.delete_btn = Button(
+            self, 
+            text="X", 
+            font =("Comfortaa", 20), 
+            fg="#edc68d", 
+            bg="#303938",
+            activebackground="#edc68d",
+            activeforeground="#303938",
+            relief="flat",
+            command=self.clean_interface,
+            state="disabled"
+            )
+        
+        self.delete_btn.place(
+            relx=0.85, 
+            rely=0.2, 
+            anchor="e",
+            relwidth=0.08, 
+            relheight=0.25
             )
         
         self.lable_1 = Label(
@@ -125,10 +147,10 @@ class Window(Tk):
         )
 
         self.entry_size.place(
-            relx=0.8, 
+            relx=0.74, 
             rely=0.1, 
             anchor="e",
-            relwidth=0.25, 
+            relwidth=0.2, 
             relheight=0.1
             )
 
@@ -141,10 +163,10 @@ class Window(Tk):
             )
 
         self.entry_element.place(
-            relx=0.8, 
+            relx=0.74, 
             rely=0.3, 
             anchor="e",
-            relwidth=0.25, 
+            relwidth=0.2, 
             relheight=0.1
             )
         
@@ -210,58 +232,113 @@ class Window(Tk):
             relwidth=0.5, 
             relheight=0.1
             )
+        
+    
+    def clean_interface(self):
+        self.size_var.set("")
+        self.element_var.set("")
+        
+        self.cd.set("Choose algorithm")
+
+        self.lable_4.config(text="")
+        self.lable_5.config(text="")
+
+        self.controler.reset_data()
+        self.history_list = []
+        
+        if self.table_window is not None and self.table_window.winfo_exists():
+            self.table_window.destroy()
+
+        self.check_fields()  
 
     def clicked_on_search(self):
-        array_size = self.entry_size.get()
-        array_size = int(array_size)
-        if array_size <= 1000 and array_size >= 100:
-            element = self.entry_element.get()
-            choice = self.cd.get()
-            self.controler.filling_array_random_elements(array_size)
-            is_found, self.history_list, counter = self.controler.searching(choice, element)
-            if is_found:
-                self.lable_5.config(text="Element is found",fg="#51ea3d")
-                self.lable_4.config(text=counter)
-            else:
-                self.lable_5.config(text="Element is not found",fg="#f1392b")
-                self.history_list = []
+        if self.controler.array is None:
+            messagebox.showwarning("Attention","First create a table, to do this click on TABLE")
+            return
+        
+        array_size = int(self.entry_size.get())
+
+        if len(self.controler.array) != array_size:
+            messagebox.showwarning("Attention", "You changed the size of the array, click 'TABLE' to generate new data.")
+            return
+        
+        element = int(self.entry_element.get())
+        choice = self.cd.get()
+        if choice == "Fibonacci Search" or choice == "Interpolation Search":
+            self.controler.sort_array()
+        
+        if choice == "Sequential Search" and self.controler.is_sorted:
+            messagebox.showwarning(
+                "Information", 
+                "Array is sorted so search results for sequential search may not be accurate!"
+            )
+        is_found, self.history_list, counter = self.controler.searching(choice, element)
+
+        if is_found:
+            self.lable_5.config(text="Element is found",fg="#51ea3d")
+            self.lable_4.config(text=counter)
         else:
-            messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range (100, 1000)")
+            self.lable_5.config(text="Element is not found",fg="#f1392b")
+            self.history_list = []
+
+        self.btn_2.config(state="normal")
     
     def creation_table(self):
-        if (self.controler.array == None):
-            array_size = int(self.entry_size.get())
+        array_size = int(self.entry_size.get())
+
+        if self.controler.array is None or len(self.controler.array) != array_size:
             if array_size <= 1000 and array_size >= 100:
-                self.controler.filling_array_random_elements(array_size)
+                if self.controler.array is None or len(self.controler.array) != array_size:
+                    self.controler.filling_array_random_elements(array_size)
             else:
                 messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range (100, 1000)")
                 return
 
+        choice = self.cd.get()
+        if choice == "Fibonacci Search" or choice == "Interpolation Search":
+            self.controler.sort_array()
+
         if self.table_window is None or not self.table_window.winfo_exists():
-            self.table_window = Table(self.controler.array)
+            self.table_window = Table(self.controler.array, choice)
+            self.table_window.table_check(self.controler.array, self.history_list, choice)
         else:
-            self.table_window.table_check(self.controler.array, self.history_list)
-
-
+            self.table_window.table_check(self.controler.array, self.history_list, choice)
 
     def check_fields(self, *args):
         size = self.size_var.get()
         element = self.element_var.get()
         choice = self.algorithm_var.get()
 
+        if size != "" or element != "" or choice != "Choose algorithm":
+            self.delete_btn.config(state="normal")
+        else:
+            self.delete_btn.config(state="disabled")
+
         if size != "":
             self.btn_3.config(state="normal")
             if element != "" and choice != "Choose algorithm":
                 self.btn_1.config(state="normal")
-                if self.lable_4.cget("text") != "":
-                    self.btn_2.config(state="normal")
-                else:
-                    self.btn_2.config(state="disabled")
             else:
                 self.btn_1.config(state="disabled")
         else:
+            self.btn_1.config(state="disabled")
+            self.btn_2.config(state="disabled")
             self.btn_3.config(state="disabled")
+        
+        if self.history_list:
+             self.btn_2.config(state="normal")
+        else:
+             self.btn_2.config(state="disabled")
     
-
     def validate_char(self, text):
         return text == "" or text.isdigit() and len(text) <= self.enter_lenght
+    
+    def write_result(self):
+        user_solution = messagebox.askokcancel(
+            "Confirmation",
+            "Do you want to save the search results to a file?"
+        )
+
+        if user_solution:
+            file = File()
+            file.write_file(40, self.controler.array, self.entry_element.get())

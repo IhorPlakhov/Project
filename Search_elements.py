@@ -63,10 +63,12 @@ class FibonacciSearch(Search):
                 fib_num_2 = fib_num - fib_num_1
             else:
                 return True, ind_list
-            
+        
+        if fib_num_1 and (offset + 1 < arr_size): 
             self.comparison_counter += 1
-            if fib_num_1 and arr[offset + 1] == element:
-                ind_list.append(offset + 1)
+            ind_list.append(offset + 1)
+            
+            if arr[offset + 1] == element:
                 return True, ind_list
         
         return False, ind_list
@@ -170,25 +172,32 @@ class SearchController():
 
     def __init__(self):
         self._array = None
+        self.is_sorted = False
 
         self._variants = {
         "Sequential Search" : SequentialSearch(),
         "Fibonacci Search" : FibonacciSearch(),
         "Interpolation Search" : InterpolationSearch(),
-        "HashFunction Search" : HashFunctionSearch()
+        "Hash Function Search" : HashFunctionSearch()
     }
     
     @property
     def array(self):
         return self._array
+    
+    def reset_data(self):
+        self._array = None
+        self.is_sorted = False
 
     def filling_array_random_elements(self, size):
         self._array= array('i', sample(range(0,size * 10),size))
+        self.is_sorted = False
 
+    def sort_array(self):
+        self._array = array('i',sorted(self._array))
+        self.is_sorted = True
     
     def searching(self, variant, target_element):
         new_sort = self._variants[variant]
-        if variant == "Fibonacci Search" or variant == "Interpolation Search":
-            self._array = array('i',sorted(self._array))
         new_sort.comparison_counter = 0
         return *(new_sort.searching_element(self.array, target_element)), new_sort.comparison_counter
