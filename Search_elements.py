@@ -34,7 +34,7 @@ class SequentialSearch(Search):
                 
 class FibonacciSearch(Search):
 
-    def searching_element(self, arr, element) -> Tuple[bool, List[int]]:
+    def search(self, arr: array, element: int) -> Tuple[bool, List[int]]:
         ind_list = []
         arr_size = len(arr)
         fib_num_2 = 0
@@ -75,7 +75,7 @@ class FibonacciSearch(Search):
 
 class InterpolationSearch(Search):
     
-    def searching_element(self, arr, element):
+    def search(self, arr: array, element: int):
         ind_list = []
         low = 0
         high = len(arr)-1
@@ -107,8 +107,8 @@ class HashFunctionSearch(Search):
         self.hash_table = None
         self.last_arr = None
 
-    def searching_element(self, arr: array, element: int) -> Tuple[bool, List[int]]:
-        self._table_check(arr)
+    def search(self, arr: array, element: int) -> Tuple[bool, List[int]]:
+        self.update_table_status(arr)
         size = len(self.hash_table)
 
         hash1 = self.first_hashing(element, size)
@@ -154,8 +154,8 @@ class HashFunctionSearch(Search):
         for index in range(len(self.last_arr)):
             element = self.last_arr[index]
             
-            hash1 = self._first_hashing(element, size)
-            hash2 = self._second_hashing(element, size)
+            hash1 = self.first_hashing(element, size)
+            hash2 = self.second_hashing(element, size)
             for i in range(size):
                 ind = (hash1+ i*hash2) % size
 
@@ -163,7 +163,7 @@ class HashFunctionSearch(Search):
                     self.hash_table[ind] = index
                     break
     
-    def table_check(self, new_array) -> None:
+    def update_table_status(self, new_array) -> None:
         if self.hash_table is None or self.last_arr is not new_array:
             self.last_arr = new_array
             self.create_hash_table()

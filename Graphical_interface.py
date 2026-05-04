@@ -17,6 +17,7 @@ class Window(Tk):
         self.element_var = StringVar()
         self.algorithm_var = StringVar()
         self.history_list = []
+        self.handling_focus_out = False
 
         self.table_window = None
 
@@ -71,7 +72,7 @@ class Window(Tk):
             activebackground="#edc68d",
             activeforeground="#303938",
             relief="flat",
-            command=self.creation_table,
+            command=self.create_table_view,
             state="disabled"
             )
         
@@ -212,17 +213,16 @@ class Window(Tk):
             relheight=0.1
             )
         
-        self.combo_algoritms = Combobox(self,state="readonly")
+        self.combo_algorithms = Combobox(self,state="readonly")
         self.combo_algorithms.configure(
             font =("Comfortaa", 20),
             values=self.type_of_search,
             textvariable=self.algorithm_var
-
             )
 
         self.combo_algorithms.set("Choose algorithm")
 
-        self.combo_algoritms.place(
+        self.combo_algorithms.place(
             relx=0.5, 
             rely=0.5, 
             anchor="center",
@@ -237,14 +237,16 @@ class Window(Tk):
         self.entry_size.bind("<FocusOut>", self.on_size_focus_out)
         self.entry_size.bind("<Return>", self.on_size_focus_out)
 
-        self.combo_algorithms.bind("<<ComboboxSelected>>", self.changing_algoritm)
+        self.combo_algorithms.bind("<<ComboboxSelected>>", self.changing_algorithm)
     
-    def changing_algoritm(self, event=None):
+    def changing_algorithm(self, event=None):
         choice = self.algorithm_var.get()
+        array_changed = False
 
         if choice == "Fibonacci Search" or choice == "Interpolation Search":
-            if not self.controler.is_sorted:
+            if self.controler.array is not None and not self.controler.is_sorted:
                 self.controler.sort_array()
+                array_changed = True
 
         elif choice == "Sequential Search":
             if self.controler.is_sorted:
@@ -257,9 +259,11 @@ class Window(Tk):
                 )
                 if create_new:
                     self.controler.filling_array_random_elements(len(self.controler.array))
+                    self.history_list.clear()
+                    array_changed = True
 
-        if not self.history_list and self.table_window is not None and self.table_window.winfo_exists():
-            self.table_window.table_check(self.controler.array, self.history_list, choice)
+        if (array_changed or not self.history_list) and self.table_window is not None and self.table_window.winfo_exists():
+            self.table_window.update_table_status(self.controler.array, self.history_list, choice)
             
         self.check_fields()
 
@@ -267,13 +271,13 @@ class Window(Tk):
         current_text = self.label_difficulty_value.cget("text")
         
         if current_text != "":
-            self.lebel_difficulty_value.config(text="")
-            self.lebel_status.config(text="")
+            self.label_difficulty_value.config(text="")
+            self.label_status.config(text="")
             self.history_list.clear()
             
             if self.table_window is not None and self.table_window.winfo_exists():
                 choice = self.algorithm_var.get()
-                self.table_window.table_check(self.controler.array, self.history_list, choice)
+                self.table_window.update_table_status(self.controler.array, self.history_list, choice)
                 
         self.check_fields()
 
@@ -294,11 +298,15 @@ class Window(Tk):
         self.check_fields()  
 
     def on_size_focus_out(self, event):
+        if self.handling_focus_out:
+            return
         if not self.entry_size.get().isdigit():
             return
         
         if self.table_window is not None and self.table_window.winfo_exists():
-            self.creation_table()
+            self.handling_focus_out = True
+            self.create_table_view()
+            self.handling_focus_out = False
         
     def table_close(self):
         self.table_window.destroy()
@@ -321,15 +329,15 @@ class Window(Tk):
         is_found, self.history_list, counter = self.controler.searching(choice, element)
 
         if is_found:
-            self.lebel_status.config(text="Element is found",fg="#51ea3d")
-            self.lebel_difficulty_value.config(text = str(counter))
+            self.label_status.config(text="Element is found",fg="#51ea3d")
+            self.label_difficulty_value.config(text = str(counter))
         else:
-            self.lebel_status.config(text="Element is not found",fg="#f1392b")
-            self.lebel_difficulty_value.config(text="")
+            self.label_status.config(text="Element is not found",fg="#f1392b")
+            self.label_difficulty_value.config(text="")
             self.history_list.clear()
 
         if self.table_window is not None and self.table_window.winfo_exists():
-            self.table_window.table_check(self.controler.array, self.history_list, choice)
+            self.table_window.update_table_status(self.controler.array, self.history_list, choice)
 
         self.btn_save_file.config(state="normal")
         self.check_fields()
@@ -354,9 +362,9 @@ class Window(Tk):
 
         if self.table_window is None or not self.table_window.winfo_exists():
             self.table_window = Table(self.controler.array, choice)
-            self.table_window.protocol("WM_DELETE_WINDOW", self.closing_window)
+            self.table_window.protocol("WM_DELETE_WINDOW", self.table_close)
         
-        self.table_window.table_check(self.controler.array, self.history_list, choice)
+        self.table_window.update_table_status(self.controler.array, self.history_list, choice)
         self.check_fields()
 
     def check_fields(self, *args):

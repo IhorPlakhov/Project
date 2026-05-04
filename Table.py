@@ -21,7 +21,7 @@ class Table (Toplevel):
 
         self.build_table()
 
-        self.left_btn = Button(
+        self.btn_prev_step = Button(
             self,
             text="<", 
             font =("Comfortaa", 30), 
@@ -34,7 +34,7 @@ class Table (Toplevel):
             command = lambda: self.showing_search_path(False)
         )
         
-        self.left_btn.place(
+        self.btn_prev_step.place(
             relx=0.35,
             rely=0.85, 
             anchor="center",
@@ -42,7 +42,7 @@ class Table (Toplevel):
             relheight=0.1
             )
         
-        self.right_btn = Button(
+        self.btn_next_step = Button(
             self, 
             text=">", 
             font =("Comfortaa", 30), 
@@ -55,7 +55,7 @@ class Table (Toplevel):
             command = lambda: self.showing_search_path(True)
         )
         
-        self.right_btn.place(
+        self.btn_next_step.place(
             relx=0.65,
             rely=0.85, 
             anchor="center",
@@ -109,8 +109,8 @@ class Table (Toplevel):
             lbl.grid(row=table_row, column=table_column, sticky="nsew", padx=1, pady=1)
             self.cells.append(lbl)
 
-    def showing_search_path(self, step_change):
-        if step_change:
+    def showing_search_path(self, is_next):
+        if is_next:
             new_idx = self.search_history[self.iteration]
             self.iteration+=1
             color = "#deda03"
@@ -126,19 +126,10 @@ class Table (Toplevel):
         self.center_label.config(text=f"{self.iteration} / {len(self.search_history)}")
         
     def update_button_status(self):
-        if not self.search_history:
-            self.left_btn.config(state="disabled")
-            self.right_btn.config(state="disabled")
-        else:
-            if self.iteration == 0:
-                self.left_btn.config(state="disabled")
-            else:
-                self.left_btn.config(state="normal")
-            
-            if self.iteration == len(self.search_history):
-                self.right_btn.config(state="disabled")
-            else:
-                self.right_btn.config(state="normal")
+        has_history = bool(self.search_history)
+        
+        self.btn_prev_step.config(state="normal" if has_history and self.iteration > 0 else "disabled")
+        self.btn_next_step.config(state="normal" if has_history and self.iteration < len(self.search_history) else "disabled")
 
     def update_table_status(self, new_array, hist_arr, algo):
 
