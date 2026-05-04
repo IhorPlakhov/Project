@@ -8,15 +8,16 @@ class Table (Toplevel):
         self.geometry("1500x850")
         self.element_array = arr
         self.iteration = 0
-        self.last_iteration = ""
         self.search_history = []
 
         self.table_frame = Frame(self, bg="#000000",)
         self.table_frame.place(x=0, y=0, relwidth=1, relheight=0.705)
 
         self.cells = []
-        for i in range(40): self.table_frame.columnconfigure(i, weight=1)
-        for j in range(25): self.table_frame.rowconfigure(j, weight=1)
+        for i in range(40): 
+            self.table_frame.columnconfigure(i, weight=1)
+        for j in range(25): 
+            self.table_frame.rowconfigure(j, weight=1)
 
         self.build_table()
 
@@ -139,11 +140,10 @@ class Table (Toplevel):
             else:
                 self.right_btn.config(state="normal")
 
-    def table_check(self, new_array, hist_arr, algo):
+    def update_table_status(self, new_array, hist_arr, algo):
 
         if algo == "Choose algorithm":
-            algo = "You don't choced the algorithm"
-            self.info_label.config(text=f'"{algo}" on array of size {len(new_array)}')
+            self.info_label.config(text=f"You don't choced the algorithm. Array size: {len(new_array)}")
         else:
             self.info_label.config(text=f'Search using algorithm "{algo}" on array of size {len(new_array)}')
 
@@ -157,8 +157,7 @@ class Table (Toplevel):
         else:
             self.element_array = new_array
             for i, value in enumerate(self.element_array):
-                self.cells[i].config(text=value)
-                self.cells[i].config(bg="#edc68d")
+                self.cells[i].config(text=value, bg="#edc68d")
 
         self.search_history = hist_arr
         self.iteration = 0

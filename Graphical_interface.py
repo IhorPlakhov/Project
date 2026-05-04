@@ -5,10 +5,10 @@ from File import *
 
 class Window(Tk):
 
-    def __init__(self, controler):
+    def __init__(self, controller):
         super().__init__()
 
-        self.controler = controler
+        self.controler = controller
         self.title("Search comparison")
         self.geometry("450x300")
         self.type_of_search = ["Sequential Search","Fibonacci Search","Interpolation Search","Hash Function Search"]
@@ -20,7 +20,7 @@ class Window(Tk):
 
         self.table_window = None
 
-        self.btn_1 = Button(
+        self.btn_start_search = Button(
             self, 
             text="START", 
             font =("Comfortaa", 20), 
@@ -33,7 +33,7 @@ class Window(Tk):
             state="disabled"
             )
         
-        self.btn_1.place(
+        self.btn_start_search.place(
             relx=0.5,
             rely=0.9, 
             anchor="center",
@@ -41,7 +41,7 @@ class Window(Tk):
             relheight=0.12
             )
         
-        self.btn_2 = Button(
+        self.btn_save_file = Button(
             self, 
             text="FILE", 
             font =("Comfortaa", 20), 
@@ -54,7 +54,7 @@ class Window(Tk):
             state="disabled"
             )
         
-        self.btn_2.place(
+        self.btn_save_file.place(
             relx=0.65, 
             rely=0.9, 
             anchor="w",
@@ -62,7 +62,7 @@ class Window(Tk):
             relheight=0.12
             )
         
-        self.btn_3 = Button(
+        self.btn_show_table = Button(
             self, 
             text="TABLE", 
             font =("Comfortaa", 20), 
@@ -75,7 +75,7 @@ class Window(Tk):
             state="disabled"
             )
         
-        self.btn_3.place(
+        self.btn_show_table.place(
             relx=0.35, 
             rely=0.9, 
             anchor="e",
@@ -83,7 +83,7 @@ class Window(Tk):
             relheight=0.12
             )
         
-        self.delete_btn = Button(
+        self.btn_clear = Button(
             self, 
             text="X", 
             font =("Comfortaa", 20), 
@@ -96,7 +96,7 @@ class Window(Tk):
             state="disabled"
             )
         
-        self.delete_btn.place(
+        self.btn_clear.place(
             relx=0.85, 
             rely=0.2, 
             anchor="e",
@@ -104,14 +104,14 @@ class Window(Tk):
             relheight=0.25
             )
         
-        self.lable_1 = Label(
+        self.label_size = Label(
             self,
             text="Size of array",
             fg="#04c7ee",
             font =("Comfortaa", 20),
         )
 
-        self.lable_1.place(
+        self.label_size.place(
             relx=0.15, 
             rely=0.1, 
             anchor="w",
@@ -119,18 +119,64 @@ class Window(Tk):
             relheight=0.1
             )
         
-        self.lable_2 = Label(
+        self.label_element = Label(
             self,
             text="Target element",
             fg="#04c7ee",
             font =("Comfortaa", 20),
         )
 
-        self.lable_2.place(
+        self.label_element.place(
             relx=0.12, 
             rely=0.3, 
             anchor="w",
             relwidth=0.4, 
+            relheight=0.1
+            )
+        
+        self.label_difficulty = Label(
+            self,
+            text="Practical difficulty:",
+            fg="#04c7ee",
+            font =("Comfortaa", 20),
+        )
+
+        self.label_difficulty.place(
+            relx=0.42, 
+            rely=0.73,
+            anchor="center",
+            relwidth=0.75, 
+            relheight=0.1
+            )
+        
+        
+        self.label_difficulty_value = Label(
+            self,
+            text="",
+            fg="#04c7ee",
+            font =("Comfortaa", 20),
+            anchor="w"
+        )
+
+        self.label_difficulty_value.place(
+            relx=0.84, 
+            rely=0.73,
+            anchor="center",
+            relwidth=0.35, 
+            relheight=0.12
+            )
+        
+        self.label_status = Label(
+            self,
+            font =("Comfortaa", 18),
+            anchor="s"
+        )
+
+        self.label_status.place(
+            relx=0.5, 
+            rely=0.625,
+            anchor="center",
+            relwidth=0.5, 
             relheight=0.1
             )
         
@@ -166,66 +212,23 @@ class Window(Tk):
             relheight=0.1
             )
         
-        self.cd = Combobox(self,state="readonly")
-        self.cd.configure(
+        self.combo_algoritms = Combobox(self,state="readonly")
+        self.combo_algorithms.configure(
             font =("Comfortaa", 20),
             values=self.type_of_search,
             textvariable=self.algorithm_var
 
             )
 
-        self.cd.place(
+        self.combo_algorithms.set("Choose algorithm")
+
+        self.combo_algoritms.place(
             relx=0.5, 
             rely=0.5, 
             anchor="center",
             relwidth=0.67, 
             relheight=0.12
         )
-
-        self.lable_3 = Label(
-            self,
-            text="Practical difficulty:",
-            fg="#04c7ee",
-            font =("Comfortaa", 20),
-        )
-
-        self.lable_3.place(
-            relx=0.42, 
-            rely=0.73,
-            anchor="center",
-            relwidth=0.75, 
-            relheight=0.1
-            )
-        
-        self.lable_4 = Label(
-            self,
-            text="",
-            fg="#04c7ee",
-            font =("Comfortaa", 20),
-            anchor="w"
-        )
-
-        self.lable_4.place(
-            relx=0.84, 
-            rely=0.73,
-            anchor="center",
-            relwidth=0.35, 
-            relheight=0.12
-            )
-        
-        self.lable_5 = Label(
-            self,
-            font =("Comfortaa", 18),
-            anchor="s"
-        )
-
-        self.lable_5.place(
-            relx=0.5, 
-            rely=0.625,
-            anchor="center",
-            relwidth=0.5, 
-            relheight=0.1
-            )
         
         self.size_var.trace_add("write", self.reset_search_state)
         self.element_var.trace_add("write", self.reset_search_state)
@@ -234,8 +237,7 @@ class Window(Tk):
         self.entry_size.bind("<FocusOut>", self.on_size_focus_out)
         self.entry_size.bind("<Return>", self.on_size_focus_out)
 
-        self.cd.set("Choose algorithm")
-        self.cd.bind("<<ComboboxSelected>>", self.changing_algoritm)
+        self.combo_algorithms.bind("<<ComboboxSelected>>", self.changing_algoritm)
     
     def changing_algoritm(self, event=None):
         choice = self.algorithm_var.get()
@@ -250,26 +252,24 @@ class Window(Tk):
                     "Confirmation",
                     "Array is sorted so search results for sequential search may not be accurate!\n"
                     "Do you want generate a new unsorted array?\n"
-                    "Yes - Create new unsorted array\n"
-                    "No - Continue using this sorted array"
+                    "OK - Create new unsorted array\n"
+                    "Cancel - Continue using this sorted array"
                 )
-                self.controler.filling_array_random_elements(len(self.controler.array))
                 if create_new:
                     self.controler.filling_array_random_elements(len(self.controler.array))
 
-        if len(self.history_list) == 0:
-            if self.table_window is not None and self.table_window.winfo_exists():
-                self.table_window.table_check(self.controler.array, self.history_list, choice)
-                
+        if not self.history_list and self.table_window is not None and self.table_window.winfo_exists():
+            self.table_window.table_check(self.controler.array, self.history_list, choice)
+            
         self.check_fields()
 
     def reset_search_state(self, *args):
-        current_text = self.lable_4.cget("text")
+        current_text = self.label_difficulty_value.cget("text")
         
         if current_text != "":
-            self.lable_4.config(text="")
-            self.lable_5.config(text="")
-            self.history_list = []
+            self.lebel_difficulty_value.config(text="")
+            self.lebel_status.config(text="")
+            self.history_list.clear()
             
             if self.table_window is not None and self.table_window.winfo_exists():
                 choice = self.algorithm_var.get()
@@ -280,14 +280,13 @@ class Window(Tk):
     def clean_interface(self):
         self.size_var.set("")
         self.element_var.set("")
-        
-        self.cd.set("Choose algorithm")
+        self.combo_algorithms.set("Choose algorithm")
 
-        self.lable_4.config(text="")
-        self.lable_5.config(text="")
+        self.label_difficulty_value.config(text="")
+        self.label_status.config(text="")
 
         self.controler.reset_data()
-        self.history_list = []
+        self.history_list.clear()
         
         if self.table_window is not None and self.table_window.winfo_exists():
             self.table_window.destroy()
@@ -301,7 +300,7 @@ class Window(Tk):
         if self.table_window is not None and self.table_window.winfo_exists():
             self.creation_table()
         
-    def closing_window(self):
+    def table_close(self):
         self.table_window.destroy()
         self.check_fields()
 
@@ -317,25 +316,25 @@ class Window(Tk):
             return
         
         element = int(self.entry_element.get())
-        choice = self.cd.get()
+        choice = self.combo_algorithms.get()
         
         is_found, self.history_list, counter = self.controler.searching(choice, element)
 
         if is_found:
-            self.lable_5.config(text="Element is found",fg="#51ea3d")
-            self.lable_4.config(text=counter)
+            self.lebel_status.config(text="Element is found",fg="#51ea3d")
+            self.lebel_difficulty_value.config(text = str(counter))
         else:
-            self.lable_5.config(text="Element is not found",fg="#f1392b")
-            self.lable_4.config(text="")
-            self.history_list = []
+            self.lebel_status.config(text="Element is not found",fg="#f1392b")
+            self.lebel_difficulty_value.config(text="")
+            self.history_list.clear()
 
         if self.table_window is not None and self.table_window.winfo_exists():
             self.table_window.table_check(self.controler.array, self.history_list, choice)
 
-        self.btn_2.config(state="normal")
+        self.btn_save_file.config(state="normal")
         self.check_fields()
     
-    def creation_table(self):
+    def create_table_view(self):
         if not self.entry_size.get().isdigit():
             return
         
@@ -343,61 +342,44 @@ class Window(Tk):
 
         if self.controler.array is None or len(self.controler.array) != array_size:
             if array_size <= 1000 and array_size >= 100:
-                if self.controler.array is None or len(self.controler.array) != array_size:
-                    self.controler.filling_array_random_elements(array_size)
+                self.controler.filling_array_random_elements(array_size)
             else:
                 messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range (100, 1000)")
                 self.size_var.set("")
                 return
 
-        choice = self.cd.get()
+        choice = self.combo_algorithms.get()
         if choice == "Fibonacci Search" or choice == "Interpolation Search":
             self.controler.sort_array()
 
         if self.table_window is None or not self.table_window.winfo_exists():
             self.table_window = Table(self.controler.array, choice)
             self.table_window.protocol("WM_DELETE_WINDOW", self.closing_window)
-            self.table_window.table_check(self.controler.array, self.history_list, choice)
-        else:
-            self.table_window.table_check(self.controler.array, self.history_list, choice)
+        
+        self.table_window.table_check(self.controler.array, self.history_list, choice)
         self.check_fields()
 
     def check_fields(self, *args):
-        size = self.size_var.get()
-        element = self.element_var.get()
-        choice = self.algorithm_var.get()
+        size_entered = bool(self.size_var.get())
+        element_entered = bool(self.element_var.get())
+        algorithm_chosen = self.algorithm_var.get() != "Choose algorithm"
 
-        if hasattr(self, 'lable_4'):
-            current_text = self.lable_4.cget("text")
+        has_results = False
+        if hasattr(self, 'label_difficulty_value'):
+            current_text = self.label_difficulty_value.cget("text")
+            has_results = bool(current_text)
 
-        if size != "" or element != "" or choice != "Choose algorithm":
-            self.delete_btn.config(state="normal")
-        else:
-            self.delete_btn.config(state="disabled")
+        table_exists = self.table_window is not None and self.table_window.winfo_exists()
 
-        if size != "":
-            if element != "" and choice != "Choose algorithm":
-                self.btn_1.config(state="normal")
-            else:
-                self.btn_1.config(state="disabled")
+        can_clear = size_entered or element_entered or algorithm_chosen
+        can_start_search = size_entered and element_entered and algorithm_chosen
+        can_show_table = size_entered and not table_exists
+        can_save_file = size_entered and has_results
 
-            if self.table_window is None or not self.table_window.winfo_exists():
-                self.btn_3.config(state="normal")
-            else:
-                self.btn_3.config(state="disabled")
-        else:
-            self.btn_1.config(state="disabled")
-            self.btn_3.config(state="disabled")
-            self.btn_2.config(state="disabled")
-
-        if hasattr(self, 'lable_4'):
-            current_text = self.lable_4.cget("text")
-            if not current_text or current_text == "":
-                 self.btn_2.config(state="disabled")
-            else:
-                 self.btn_2.config(state="normal")
-        else:
-            self.btn_2.config(state="disabled")
+        self.btn_clear.config(state="normal" if can_clear else "disabled")
+        self.btn_start_search.config(state="normal" if can_start_search else "disabled")
+        self.btn_show_table.config(state="normal" if can_show_table else "disabled")
+        self.btn_save_file.config(state="normal" if can_save_file else "disabled")
     
     def validate_char(self, text):
         return text == "" or text.isdigit() and len(text) <= self.enter_lenght

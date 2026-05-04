@@ -17,7 +17,7 @@ class Search(ABC):
         self._comparison_counter = 0
 
     @abstractmethod
-    def search(self, arr, element) -> Tuple[bool, List[int]]:
+    def search(self, arr: array, element: int) -> Tuple[bool, List[int]]:
         pass
 
 class SequentialSearch(Search):
@@ -34,7 +34,7 @@ class SequentialSearch(Search):
                 
 class FibonacciSearch(Search):
 
-    def searching_element(self, arr, element):
+    def searching_element(self, arr, element) -> Tuple[bool, List[int]]:
         ind_list = []
         arr_size = len(arr)
         fib_num_2 = 0
@@ -51,7 +51,7 @@ class FibonacciSearch(Search):
         while fib_num > 1:
             i = offset + fib_num_2 if offset + fib_num_2 < arr_size-1 else arr_size-1
             ind_list.append(i)
-            self.comparison_counter+=1
+            self._comparison_counter+=1
             if arr[i] < element:
                 fib_num = fib_num_1
                 fib_num_1 = fib_num_2
@@ -65,7 +65,7 @@ class FibonacciSearch(Search):
                 return True, ind_list
         
         if fib_num_1 and (offset + 1 < arr_size): 
-            self.comparison_counter += 1
+            self._comparison_counter += 1
             ind_list.append(offset + 1)
             
             if arr[offset + 1] == element:
@@ -83,14 +83,14 @@ class InterpolationSearch(Search):
         while low <= high and element >= arr[low] and element <= arr[high]:
             if arr[low] == arr[high]:
                 ind_list.append(low)
-                self.comparison_counter+=1
+                self._comparison_counter+=1
                 if arr[low] == element:
                     return True, ind_list
                 return False, ind_list
             
-            pos = low + ((element-arr[low])*(high-low)//(arr[high]- arr[low]))
+            pos = low + ((element-arr[low])*(high-low)//(arr[high] - arr[low]))
             ind_list.append(pos)
-            self.comparison_counter+=1
+            self._comparison_counter+=1
             if arr[pos] == element:
                 return True, ind_list
             elif arr[pos] < element:
