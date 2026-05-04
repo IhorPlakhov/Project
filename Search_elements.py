@@ -172,7 +172,7 @@ class SearchController():
 
     def __init__(self):
         self._array = None
-        self.is_sorted = False
+        self._is_sorted = False
 
         self._variants = {
         "Sequential Search" : SequentialSearch(),
@@ -185,17 +185,21 @@ class SearchController():
     def array(self):
         return self._array
     
+    @property
+    def is_sorted(self):
+        return self._is_sorted
+
     def reset_data(self):
         self._array = None
-        self.is_sorted = False
+        self._is_sorted = False
 
     def filling_array_random_elements(self, size):
         self._array= array('i', sample(range(0,size * 10),size))
-        self.is_sorted = False
+        self._is_sorted = False
 
     def sort_array(self):
         self._array = array('i',sorted(self._array))
-        self.is_sorted = True
+        self._is_sorted = True
     
     def searching(self, variant, target_element):
         new_sort = self._variants[variant]

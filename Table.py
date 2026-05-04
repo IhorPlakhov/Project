@@ -4,7 +4,8 @@ class Table (Toplevel):
     def __init__(self, arr, algo=""):
         super().__init__()
         self.title("Table")
-        self.geometry("1600x850")
+        self.state('zoomed')
+        self.geometry("1500x850")
         self.element_array = arr
         self.iteration = 0
         self.last_iteration = ""
@@ -140,8 +141,11 @@ class Table (Toplevel):
 
     def table_check(self, new_array, hist_arr, algo):
 
-        if algo:
-            self.info_label.config(text=f'Search using algorithm "{algo}" on an array of size {len(new_array)}')
+        if algo == "Choose algorithm":
+            algo = "You don't choced the algorithm"
+            self.info_label.config(text=f'"{algo}" on array of size {len(new_array)}')
+        else:
+            self.info_label.config(text=f'Search using algorithm "{algo}" on array of size {len(new_array)}')
 
         if self.element_array is new_array:
             for idx in self.search_history:

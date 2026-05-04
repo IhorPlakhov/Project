@@ -173,8 +173,6 @@ class Window(Tk):
             textvariable=self.algorithm_var
 
             )
-        self.cd.set("Choose algorithm")
-        self.cd.bind("<<ComboboxSelected>>", self.check_fields)
 
         self.cd.place(
             relx=0.5, 
@@ -229,11 +227,56 @@ class Window(Tk):
             relheight=0.1
             )
         
-        self.size_var.trace_add("write", self.check_fields)
-        self.element_var.trace_add("write", self.check_fields)
-        self.algorithm_var.trace_add("write", self.check_fields)
-        
+        self.size_var.trace_add("write", self.reset_search_state)
+        self.element_var.trace_add("write", self.reset_search_state)
+        self.algorithm_var.trace_add("write", self.reset_search_state)
+
+        self.entry_size.bind("<FocusOut>", self.on_size_focus_out)
+        self.entry_size.bind("<Return>", self.on_size_focus_out)
+
+        self.cd.set("Choose algorithm")
+        self.cd.bind("<<ComboboxSelected>>", self.changing_algoritm)
     
+    def changing_algoritm(self, event=None):
+        choice = self.algorithm_var.get()
+
+        if choice == "Fibonacci Search" or choice == "Interpolation Search":
+            if not self.controler.is_sorted:
+                self.controler.sort_array()
+
+        elif choice == "Sequential Search":
+            if self.controler.is_sorted:
+                create_new = messagebox.askokcancel(
+                    "Confirmation",
+                    "Array is sorted so search results for sequential search may not be accurate!\n"
+                    "Do you want generate a new unsorted array?\n"
+                    "Yes - Create new unsorted array\n"
+                    "No - Continue using this sorted array"
+                )
+                self.controler.filling_array_random_elements(len(self.controler.array))
+                if create_new:
+                    self.controler.filling_array_random_elements(len(self.controler.array))
+
+        if len(self.history_list) == 0:
+            if self.table_window is not None and self.table_window.winfo_exists():
+                self.table_window.table_check(self.controler.array, self.history_list, choice)
+                
+        self.check_fields()
+
+    def reset_search_state(self, *args):
+        current_text = self.lable_4.cget("text")
+        
+        if current_text != "":
+            self.lable_4.config(text="")
+            self.lable_5.config(text="")
+            self.history_list = []
+            
+            if self.table_window is not None and self.table_window.winfo_exists():
+                choice = self.algorithm_var.get()
+                self.table_window.table_check(self.controler.array, self.history_list, choice)
+                
+        self.check_fields()
+
     def clean_interface(self):
         self.size_var.set("")
         self.element_var.set("")
@@ -251,6 +294,17 @@ class Window(Tk):
 
         self.check_fields()  
 
+    def on_size_focus_out(self, event):
+        if not self.entry_size.get().isdigit():
+            return
+        
+        if self.table_window is not None and self.table_window.winfo_exists():
+            self.creation_table()
+        
+    def closing_window(self):
+        self.table_window.destroy()
+        self.check_fields()
+
     def clicked_on_search(self):
         if self.controler.array is None:
             messagebox.showwarning("Attention","First create a table, to do this click on TABLE")
@@ -264,14 +318,7 @@ class Window(Tk):
         
         element = int(self.entry_element.get())
         choice = self.cd.get()
-        if choice == "Fibonacci Search" or choice == "Interpolation Search":
-            self.controler.sort_array()
         
-        if choice == "Sequential Search" and self.controler.is_sorted:
-            messagebox.showwarning(
-                "Information", 
-                "Array is sorted so search results for sequential search may not be accurate!"
-            )
         is_found, self.history_list, counter = self.controler.searching(choice, element)
 
         if is_found:
@@ -282,10 +329,16 @@ class Window(Tk):
             self.lable_4.config(text="")
             self.history_list = []
 
+        if self.table_window is not None and self.table_window.winfo_exists():
+            self.table_window.table_check(self.controler.array, self.history_list, choice)
+
         self.btn_2.config(state="normal")
         self.check_fields()
     
     def creation_table(self):
+        if not self.entry_size.get().isdigit():
+            return
+        
         array_size = int(self.entry_size.get())
 
         if self.controler.array is None or len(self.controler.array) != array_size:
@@ -294,6 +347,7 @@ class Window(Tk):
                     self.controler.filling_array_random_elements(array_size)
             else:
                 messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range (100, 1000)")
+                self.size_var.set("")
                 return
 
         choice = self.cd.get()
@@ -302,6 +356,7 @@ class Window(Tk):
 
         if self.table_window is None or not self.table_window.winfo_exists():
             self.table_window = Table(self.controler.array, choice)
+            self.table_window.protocol("WM_DELETE_WINDOW", self.closing_window)
             self.table_window.table_check(self.controler.array, self.history_list, choice)
         else:
             self.table_window.table_check(self.controler.array, self.history_list, choice)
@@ -312,17 +367,24 @@ class Window(Tk):
         element = self.element_var.get()
         choice = self.algorithm_var.get()
 
+        if hasattr(self, 'lable_4'):
+            current_text = self.lable_4.cget("text")
+
         if size != "" or element != "" or choice != "Choose algorithm":
             self.delete_btn.config(state="normal")
         else:
             self.delete_btn.config(state="disabled")
 
         if size != "":
-            self.btn_3.config(state="normal")
             if element != "" and choice != "Choose algorithm":
                 self.btn_1.config(state="normal")
             else:
                 self.btn_1.config(state="disabled")
+
+            if self.table_window is None or not self.table_window.winfo_exists():
+                self.btn_3.config(state="normal")
+            else:
+                self.btn_3.config(state="disabled")
         else:
             self.btn_1.config(state="disabled")
             self.btn_3.config(state="disabled")
