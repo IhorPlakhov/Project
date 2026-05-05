@@ -29,3 +29,4 @@ class UIConfig:
     CELL_TEXT = "#000000"
     STATUS_FOUND = "#51ea3d"
     STATUS_NOT_FOUND = "#f1392b"
+    
