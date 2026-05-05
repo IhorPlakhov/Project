@@ -1,22 +1,23 @@
 from tkinter import Button, Label, Toplevel, Frame
+from Constans import UIConfig
 
 class Table (Toplevel):
     def __init__(self, arr, algo=""):
         super().__init__()
         self.title("Table")
         self.state('zoomed')
-        self.geometry("1500x850")
+        self.geometry(UIConfig.TABLE_SIZE)
         self.element_array = arr
         self.iteration = 0
         self.search_history = []
 
-        self.table_frame = Frame(self, bg="#000000",)
+        self.table_frame = Frame(self, bg=UIConfig.TABLE_BACKGROUND,)
         self.table_frame.place(x=0, y=0, relwidth=1, relheight=0.705)
 
         self.cells = []
-        for i in range(40): 
+        for i in range(UIConfig.TABLE_COLUMNS):
             self.table_frame.columnconfigure(i, weight=1)
-        for j in range(25): 
+        for j in range(UIConfig.TABLE_ROWS):
             self.table_frame.rowconfigure(j, weight=1)
 
         self.build_table()
@@ -24,11 +25,11 @@ class Table (Toplevel):
         self.btn_prev_step = Button(
             self,
             text="<", 
-            font =("Comfortaa", 30), 
-            fg="#edc68d", 
-            bg="#303938",
-            activebackground="#edc68d",
-            activeforeground="#303938",
+            font =UIConfig.TABLE_COUNTER, 
+            fg=UIConfig.BUTTONS_TEXT, 
+            bg=UIConfig.BUTTONS_BACKGROUND,
+            activebackground=UIConfig.BUTTONS_TEXT,
+            activeforeground=UIConfig.BUTTONS_BACKGROUND,
             relief="flat",
             state="disabled",
             command = lambda: self.showing_search_path(False)
@@ -45,11 +46,11 @@ class Table (Toplevel):
         self.btn_next_step = Button(
             self, 
             text=">", 
-            font =("Comfortaa", 30), 
-            fg="#edc68d", 
-            bg="#303938",
-            activebackground="#edc68d",
-            activeforeground="#303938",
+            font =UIConfig.TABLE_COUNTER, 
+            fg=UIConfig.BUTTONS_TEXT, 
+            bg=UIConfig.BUTTONS_BACKGROUND,
+            activebackground=UIConfig.BUTTONS_TEXT,
+            activeforeground=UIConfig.BUTTONS_BACKGROUND,
             relief="flat",
             state="disabled",
             command = lambda: self.showing_search_path(True)
@@ -66,8 +67,8 @@ class Table (Toplevel):
         self.center_label = Label(
             self,
             text="0 / 0",
-            fg="#04c7ee",
-            font=("Comfortaa", 30),
+            fg=UIConfig.TEXT_COLOR,
+            font=UIConfig.TABLE_COUNTER,
         )
 
         self.center_label.place(
@@ -79,8 +80,8 @@ class Table (Toplevel):
         self.info_label = Label(
             self,
             text=f'Search using algorithm "{algo}" on an array of size {len(self.element_array)}',
-            fg="#04c7ee",
-            font=("Comfortaa", 25),
+            fg=UIConfig.TEXT_COLOR,
+            font=UIConfig.TABLE_INFO,
         )
 
         self.info_label.place(
@@ -95,16 +96,16 @@ class Table (Toplevel):
         self.cells.clear()
     
         for index, value in enumerate(self.element_array):
-            table_row = index // 40
-            table_column = index % 40
+            table_row = index // UIConfig.TABLE_COLUMNS
+            table_column = index % UIConfig.TABLE_COLUMNS
             
             lbl = Label(
                 self.table_frame, 
                 text=value, 
                 relief="flat", 
-                font=("Comfortaa", 10),
-                bg="#edc68d",
-                fg="#000000",
+                font=UIConfig.TABLE_CELL,
+                bg=UIConfig.CELL_DEFAULT,
+                fg=UIConfig.CELL_TEXT,
             )
             lbl.grid(row=table_row, column=table_column, sticky="nsew", padx=1, pady=1)
             self.cells.append(lbl)
@@ -113,17 +114,25 @@ class Table (Toplevel):
         if is_next:
             new_idx = self.search_history[self.iteration]
             self.iteration+=1
-            color = "#deda03"
+            color = UIConfig.CELL_VISITED
             if self.iteration == len(self.search_history):
-                color = "#15970c"
+                color = UIConfig.CELL_FOUND
             self.cells[new_idx].config(bg=color)
         else:
             self.iteration-=1
             new_idx = self.search_history[self.iteration]
-            self.cells[new_idx].config(bg="#edc68d")
+            self.cells[new_idx].config(bg=UIConfig.CELL_DEFAULT)
 
         self.update_button_status()
         self.center_label.config(text=f"{self.iteration} / {len(self.search_history)}")
+
+    def reset_highlights(self):
+        for idx in self.search_history:
+            self.cells[idx].config(bg=UIConfig.CELL_DEFAULT)
+        self.search_history = []
+        self.iteration = 0
+        self.center_label.config(text="0 / 0")
+        self.update_button_status()
         
     def update_button_status(self):
         has_history = bool(self.search_history)
@@ -133,14 +142,14 @@ class Table (Toplevel):
 
     def update_table_status(self, new_array, hist_arr, algo):
 
-        if algo == "Choose algorithm":
+        if algo == UIConfig.COMBO_PLACEHOLDER:
             self.info_label.config(text=f"You don't choced the algorithm. Array size: {len(new_array)}")
         else:
             self.info_label.config(text=f'Search using algorithm "{algo}" on array of size {len(new_array)}')
 
         if self.element_array is new_array:
             for idx in self.search_history:
-                self.cells[idx].config(bg="#edc68d")
+                self.cells[idx].config(bg=UIConfig.CELL_DEFAULT)
         
         elif len(self.element_array) != len(new_array):
             self.element_array = new_array
@@ -148,7 +157,7 @@ class Table (Toplevel):
         else:
             self.element_array = new_array
             for i, value in enumerate(self.element_array):
-                self.cells[i].config(text=value, bg="#edc68d")
+                self.cells[i].config(text=value, bg=UIConfig.CELL_DEFAULT)
 
         self.search_history = hist_arr
         self.iteration = 0

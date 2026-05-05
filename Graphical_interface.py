@@ -2,17 +2,17 @@ from tkinter import Tk, Button, Entry, Label, messagebox, StringVar
 from tkinter.ttk import Combobox
 from Table import Table
 from File import *
+from Constans import *
 
 class Window(Tk):
 
     def __init__(self, controller):
         super().__init__()
 
-        self.controler = controller
+        self.controller = controller
         self.title("Search comparison")
-        self.geometry("450x300")
-        self.type_of_search = ["Sequential Search","Fibonacci Search","Interpolation Search","Hash Function Search"]
-        self.enter_lenght = 5
+        self.geometry(UIConfig.WINDOW_SIZE)
+        self.type_of_search = [SearchType.SEQUENTIAL, SearchType.FIBONACCI, SearchType.INTERPOLATION, SearchType.HASH]
         self.size_var = StringVar()
         self.element_var = StringVar()
         self.algorithm_var = StringVar()
@@ -24,11 +24,11 @@ class Window(Tk):
         self.btn_start_search = Button(
             self, 
             text="START", 
-            font =("Comfortaa", 20), 
-            fg="#edc68d",
-            bg="#303938",
-            activebackground="#edc68d",
-            activeforeground="#303938",
+            font=UIConfig.MAIN, 
+            fg=UIConfig.BUTTONS_TEXT,
+            bg=UIConfig.BUTTONS_BACKGROUND,
+            activebackground=UIConfig.BUTTONS_TEXT,
+            activeforeground=UIConfig.BUTTONS_BACKGROUND,
             relief="flat",
             command=self.clicked_on_search,
             state="disabled"
@@ -45,11 +45,11 @@ class Window(Tk):
         self.btn_save_file = Button(
             self, 
             text="FILE", 
-            font =("Comfortaa", 20), 
-            fg="#edc68d", 
-            bg="#303938",
-            activebackground="#edc68d",
-            activeforeground="#303938",
+            font =UIConfig.MAIN, 
+            fg=UIConfig.BUTTONS_TEXT, 
+            bg=UIConfig.BUTTONS_BACKGROUND,
+            activebackground=UIConfig.BUTTONS_TEXT,
+            activeforeground=UIConfig.BUTTONS_BACKGROUND,
             relief="flat",
             command=self.save_result,
             state="disabled"
@@ -66,11 +66,11 @@ class Window(Tk):
         self.btn_show_table = Button(
             self, 
             text="TABLE", 
-            font =("Comfortaa", 20), 
-            fg="#edc68d", 
-            bg="#303938",
-            activebackground="#edc68d",
-            activeforeground="#303938",
+            font =UIConfig.MAIN, 
+            fg=UIConfig.BUTTONS_TEXT, 
+            bg=UIConfig.BUTTONS_BACKGROUND,
+            activebackground=UIConfig.BUTTONS_TEXT,
+            activeforeground=UIConfig.BUTTONS_BACKGROUND,
             relief="flat",
             command=self.create_table_view,
             state="disabled"
@@ -87,11 +87,11 @@ class Window(Tk):
         self.btn_clear = Button(
             self, 
             text="X", 
-            font =("Comfortaa", 20), 
-            fg="#edc68d", 
-            bg="#303938",
-            activebackground="#edc68d",
-            activeforeground="#303938",
+            font =UIConfig.MAIN, 
+            fg=UIConfig.BUTTONS_TEXT, 
+            bg=UIConfig.BUTTONS_BACKGROUND,
+            activebackground=UIConfig.BUTTONS_TEXT,
+            activeforeground=UIConfig.BUTTONS_BACKGROUND,
             relief="flat",
             command=self.clean_interface,
             state="disabled"
@@ -108,8 +108,8 @@ class Window(Tk):
         self.label_size = Label(
             self,
             text="Size of array",
-            fg="#04c7ee",
-            font =("Comfortaa", 20),
+            fg=UIConfig.TEXT_COLOR,
+            font=UIConfig.MAIN,
         )
 
         self.label_size.place(
@@ -123,8 +123,8 @@ class Window(Tk):
         self.label_element = Label(
             self,
             text="Target element",
-            fg="#04c7ee",
-            font =("Comfortaa", 20),
+            fg=UIConfig.TEXT_COLOR,
+            font =UIConfig.MAIN,
         )
 
         self.label_element.place(
@@ -138,8 +138,8 @@ class Window(Tk):
         self.label_difficulty = Label(
             self,
             text="Practical difficulty:",
-            fg="#04c7ee",
-            font =("Comfortaa", 20),
+            fg=UIConfig.TEXT_COLOR,
+            font =UIConfig.MAIN,
         )
 
         self.label_difficulty.place(
@@ -154,8 +154,8 @@ class Window(Tk):
         self.label_difficulty_value = Label(
             self,
             text="",
-            fg="#04c7ee",
-            font =("Comfortaa", 20),
+            fg=UIConfig.TEXT_COLOR,
+            font=UIConfig.MAIN,
             anchor="w"
         )
 
@@ -169,7 +169,7 @@ class Window(Tk):
         
         self.label_status = Label(
             self,
-            font =("Comfortaa", 18),
+            font =UIConfig.LABEL_SMALL,
             anchor="s"
         )
 
@@ -183,7 +183,7 @@ class Window(Tk):
         
         self.entry_size = Entry(
             self,
-            font =("Comfortaa", 20),
+            font =UIConfig.MAIN,
             validate = "key",
             validatecommand = (self.register(self.validate_char), '%P'),
             textvariable=self.size_var
@@ -199,7 +199,7 @@ class Window(Tk):
 
         self.entry_element = Entry(
                 self,
-                font = ("Comfortaa", 20),
+                font = UIConfig.MAIN,
                 validate = "key",
                 validatecommand = (self.register(self.validate_char), '%P'),
                 textvariable=self.element_var
@@ -215,12 +215,12 @@ class Window(Tk):
         
         self.combo_algorithms = Combobox(self,state="readonly")
         self.combo_algorithms.configure(
-            font =("Comfortaa", 20),
+            font =UIConfig.MAIN,
             values=self.type_of_search,
             textvariable=self.algorithm_var
             )
 
-        self.combo_algorithms.set("Choose algorithm")
+        self.combo_algorithms.set(UIConfig.COMBO_PLACEHOLDER)
 
         self.combo_algorithms.place(
             relx=0.5, 
@@ -243,13 +243,13 @@ class Window(Tk):
         choice = self.algorithm_var.get()
         array_changed = False
 
-        if choice == "Fibonacci Search" or choice == "Interpolation Search":
-            if self.controler.array is not None and not self.controler.is_sorted:
-                self.controler.sort_array()
+        if choice in SearchType.SORTED_REQUIRED:
+            if self.controller.array is not None and not self.controller.is_sorted:
+                self.controller.sort_array()
                 array_changed = True
 
-        elif choice == "Sequential Search":
-            if self.controler.is_sorted:
+        elif choice == SearchType.SEQUENTIAL:
+            if self.controller.is_sorted:
                 create_new = messagebox.askokcancel(
                     "Confirmation",
                     "Array is sorted so search results for sequential search may not be accurate!\n"
@@ -258,12 +258,12 @@ class Window(Tk):
                     "Cancel - Continue using this sorted array"
                 )
                 if create_new:
-                    self.controler.filling_array_random_elements(len(self.controler.array))
+                    self.controller.filling_array_random_elements(len(self.controller.array))
                     self.history_list.clear()
                     array_changed = True
 
         if (array_changed or not self.history_list) and self.table_window is not None and self.table_window.winfo_exists():
-            self.table_window.update_table_status(self.controler.array, self.history_list, choice)
+            self.table_window.update_table_status(self.controller.array, self.history_list, choice)
             
         self.check_fields()
 
@@ -273,23 +273,21 @@ class Window(Tk):
         if current_text != "":
             self.label_difficulty_value.config(text="")
             self.label_status.config(text="")
-            self.history_list.clear()
             
-            if self.table_window is not None and self.table_window.winfo_exists():
-                choice = self.algorithm_var.get()
-                self.table_window.update_table_status(self.controler.array, self.history_list, choice)
+        if self.table_window is not None and self.table_window.winfo_exists():
+            self.table_window.reset_highlights() 
                 
         self.check_fields()
 
     def clean_interface(self):
         self.size_var.set("")
         self.element_var.set("")
-        self.combo_algorithms.set("Choose algorithm")
+        self.combo_algorithms.set(UIConfig.COMBO_PLACEHOLDER)
 
         self.label_difficulty_value.config(text="")
         self.label_status.config(text="")
 
-        self.controler.reset_data()
+        self.controller.reset_data()
         self.history_list.clear()
         
         if self.table_window is not None and self.table_window.winfo_exists():
@@ -313,69 +311,68 @@ class Window(Tk):
         self.check_fields()
 
     def clicked_on_search(self):
-        if self.controler.array is None:
+        if self.controller.array is None:
             messagebox.showwarning("Attention","First create a table, to do this click on TABLE")
             return
-        
-        array_size = int(self.entry_size.get())
 
-        if len(self.controler.array) != array_size:
-            messagebox.showwarning("Attention", "You changed the size of the array, click 'TABLE' to generate new data.")
-            return
-        
         element = int(self.entry_element.get())
         choice = self.combo_algorithms.get()
         
-        is_found, self.history_list, counter = self.controler.searching(choice, element)
+        is_found, self.history_list, counter = self.controller.searching(choice, element)
 
         if is_found:
-            self.label_status.config(text="Element is found",fg="#51ea3d")
+            self.label_status.config(text="Element is found",fg=UIConfig.STATUS_FOUND)
             self.label_difficulty_value.config(text = str(counter))
         else:
-            self.label_status.config(text="Element is not found",fg="#f1392b")
+            self.label_status.config(text="Element is not found",fg=UIConfig.STATUS_NOT_FOUND)
             self.label_difficulty_value.config(text="")
             self.history_list.clear()
 
         if self.table_window is not None and self.table_window.winfo_exists():
-            self.table_window.update_table_status(self.controler.array, self.history_list, choice)
+            self.table_window.update_table_status(self.controller.array, self.history_list, choice)
+        elif len(self.controller.array) != int(self.entry_size.get()):
+            messagebox.showwarning("Attention", "You changed the size of the array, click 'TABLE' to generate new data.")
+            return
 
         self.btn_save_file.config(state="normal")
         self.check_fields()
+
+    def generate_array_if_needed(self, array_size: int) -> bool:
+
+        if self.controller.array is None or len(self.controller.array) != array_size:
+            if array_size >= UIConfig.MIN_ARRAY_SIZE and array_size <= UIConfig.MAX_ARRAY_SIZE:
+                self.controller.filling_array_random_elements(array_size)
+                self.history_list.clear()
+            else:
+                messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range ( {UIConfig.MIN_ARRAY_SIZE},  {UIConfig.MAX_ARRAY_SIZE})")
+                self.size_var.set("")
+                return False
+        return True
     
     def create_table_view(self):
         if not self.entry_size.get().isdigit():
             return
         
-        array_size = int(self.entry_size.get())
-
-        if self.controler.array is None or len(self.controler.array) != array_size:
-            if array_size <= 1000 and array_size >= 100:
-                self.controler.filling_array_random_elements(array_size)
-            else:
-                messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range (100, 1000)")
-                self.size_var.set("")
-                return
+        if not self.generate_array_if_needed(int(self.entry_size.get())):
+            return
 
         choice = self.combo_algorithms.get()
-        if choice == "Fibonacci Search" or choice == "Interpolation Search":
-            self.controler.sort_array()
+        if choice in SearchType.SORTED_REQUIRED:
+            self.controller.sort_array()
 
         if self.table_window is None or not self.table_window.winfo_exists():
-            self.table_window = Table(self.controler.array, choice)
+            self.table_window = Table(self.controller.array, choice)
             self.table_window.protocol("WM_DELETE_WINDOW", self.table_close)
         
-        self.table_window.update_table_status(self.controler.array, self.history_list, choice)
+        self.table_window.update_table_status(self.controller.array, self.history_list, choice)
         self.check_fields()
 
     def check_fields(self, *args):
         size_entered = bool(self.size_var.get())
         element_entered = bool(self.element_var.get())
-        algorithm_chosen = self.algorithm_var.get() != "Choose algorithm"
+        algorithm_chosen = self.algorithm_var.get() != UIConfig.COMBO_PLACEHOLDER
 
-        has_results = False
-        if hasattr(self, 'label_difficulty_value'):
-            current_text = self.label_difficulty_value.cget("text")
-            has_results = bool(current_text)
+        has_results = bool(self.label_difficulty_value.cget("text"))
 
         table_exists = self.table_window is not None and self.table_window.winfo_exists()
 
@@ -390,7 +387,7 @@ class Window(Tk):
         self.btn_save_file.config(state="normal" if can_save_file else "disabled")
     
     def validate_char(self, text):
-        return text == "" or text.isdigit() and len(text) <= self.enter_lenght
+        return text == "" or text.isdigit() and len(text) <= UIConfig.MAX_INPUT_LENGTH
     
     def save_result(self):
         user_solution = messagebox.askokcancel(
@@ -400,4 +397,4 @@ class Window(Tk):
 
         if user_solution:
             file = File()
-            file.write_file(40, self.controler.array, self.entry_element.get())
+            file.write_file(UIConfig.TABLE_COLUMNS, self.controller.array, self.entry_element.get())

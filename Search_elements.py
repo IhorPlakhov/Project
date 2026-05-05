@@ -3,6 +3,7 @@ from typing import Tuple, List
 from array import array
 from random import sample
 from math import sqrt
+from Constans import SearchType
 
 class Search(ABC):
 
@@ -175,10 +176,10 @@ class SearchController():
         self._is_sorted = False
 
         self._variants = {
-        "Sequential Search" : SequentialSearch(),
-        "Fibonacci Search" : FibonacciSearch(),
-        "Interpolation Search" : InterpolationSearch(),
-        "Hash Function Search" : HashFunctionSearch()
+        SearchType.SEQUENTIAL: SequentialSearch(),
+        SearchType.FIBONACCI: FibonacciSearch(),
+        SearchType.INTERPOLATION: InterpolationSearch(),
+        SearchType.HASH: HashFunctionSearch()
     }
     
     @property
