@@ -260,6 +260,7 @@ class Window(Tk):
                 if create_new:
                     self.controller.filling_array_random_elements(len(self.controller.array))
                     self.history_list.clear()
+                    self.element_var.set("")
                     array_changed = True
 
         if (array_changed or not self.history_list) and self.table_window is not None and self.table_window.winfo_exists():
@@ -314,6 +315,18 @@ class Window(Tk):
         if self.controller.array is None:
             messagebox.showwarning("Attention","First create a table, to do this click on TABLE")
             return
+
+        array_size = int(self.entry_size.get())
+        if array_size < UIConfig.MIN_ARRAY_SIZE or array_size > UIConfig.MAX_ARRAY_SIZE:
+            self.handling_focus_out = True
+            messagebox.showerror("Error",f"Size of your array: {array_size}, but must be in range ( {UIConfig.MIN_ARRAY_SIZE},  {UIConfig.MAX_ARRAY_SIZE})")
+            self.handling_focus_out = False
+            self.size_var.set("")
+            return
+        
+        if len(self.controller.array) != array_size:
+            self.controller.filling_array_random_elements(array_size)
+            self.history_list.clear()
 
         element = int(self.entry_element.get())
         choice = self.combo_algorithms.get()
