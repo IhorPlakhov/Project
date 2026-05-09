@@ -143,7 +143,7 @@ class Table (Toplevel):
     def update_table_status(self, new_array, hist_arr, algo):
 
         if algo == UIConfig.COMBO_PLACEHOLDER:
-            self.info_label.config(text=f"You don't choced the algorithm. Array size: {len(new_array)}")
+            self.info_label.config(text=f"You haven't chosen the algorithm. Array size: {len(new_array)}")
         else:
             self.info_label.config(text=f'Search using algorithm "{algo}" on array of size {len(new_array)}')
 
